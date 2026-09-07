@@ -21,10 +21,11 @@ public:
 
     double getEstimatedHours()const override;
 
-    WorkItemIterator* createIterator()const override;
+    WorkItemIterator* createIterator(IteratorType type = IteratorType::PreOrder)const override;
     void display(int depth) const override;
 
     size_t childCount() const;
+    bool replaceChild(WorkItem* oldItem, WorkItem* newItem) override;
 
 private:
     std::string name;

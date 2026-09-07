@@ -20,7 +20,7 @@ double Task::getEstimatedHours() const {
     return estimatedHours;
 }
 
-WorkItemIterator* Task::createIterator() const {
+WorkItemIterator* Task::createIterator(IteratorType) const {
     return new NullIterator();
 }
 

@@ -1,5 +1,6 @@
 #include "WorkGroup.h"
 #include "PreOrderIterator.h"
+#include "BlockedWorkIterator.h"
 #include <algorithm>
 #include <iostream>
 
@@ -37,8 +38,14 @@ double WorkGroup::getEstimatedHours() const {
     return tot;
 }
 
-WorkItemIterator* WorkGroup::createIterator() const {
-    return new PreOrderIterator(children);
+WorkItemIterator* WorkGroup::createIterator(IteratorType type) const {
+    switch (type) {
+        case IteratorType::Blocked:
+            return new BlockedWorkIterator(children);
+        case IteratorType::PreOrder:
+        default:
+            return new PreOrderIterator(children);
+    }
 }
 
 void WorkGroup::display(int depth) const {
@@ -50,4 +57,21 @@ void WorkGroup::display(int depth) const {
 
 size_t WorkGroup::childCount() const {
     return children.size();
+}
+
+bool WorkGroup::replaceChild(WorkItem* oldItem, WorkItem* newItem){
+    for (WorkItem*& child : children){
+        if(child == oldItem){
+            child = newItem;
+            return true;
+        }
+    }
+
+    for(WorkItem* child : children){
+        if(child->replaceChild(oldItem, newItem)){
+            return true;
+        }
+    }
+
+    return false;
 }

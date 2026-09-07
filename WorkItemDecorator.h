@@ -17,7 +17,7 @@ class WorkItemDecorator : public WorkItem {
         ~WorkItemDecorator() override;
         std::string getName() const override;
         double getEstimatedHours() const override;
-        WorkItemIterator* createIterator() const override;
+        WorkItemIterator* createIterator(IteratorType type = IteratorType::PreOrder) const override;
         void display(int depth) const override;
         bool isBlocked() const override;
         std::string getStateName() const override;

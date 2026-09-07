@@ -14,7 +14,7 @@ double WorkItemDecorator::getEstimatedHours() const {
     return wrapped->getEstimatedHours();
 }
 
-WorkItemIterator* WorkItemDecorator::createIterator() const {
+WorkItemIterator* WorkItemDecorator::createIterator(IteratorType type) const {
     return wrapped->createIterator();
 }
 

@@ -1,7 +1,6 @@
 #include "WorkItem.h"
 
-WorkItem::~WorkItem() {
-}
+WorkItem::~WorkItem() {}
 
 bool WorkItem::isBlocked() const {
     return false;
@@ -9,4 +8,8 @@ bool WorkItem::isBlocked() const {
 
 std::string WorkItem::getStateName() const {
     return "-";
+}
+
+bool WorkItem::replaceChild(WorkItem*, WorkItem*){
+    return false;
 }

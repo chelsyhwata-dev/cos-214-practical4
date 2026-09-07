@@ -26,7 +26,7 @@ class TaskState;
          * @return A nullIterator because a task has no children WorkItems.
          * @details Returning a NullIterator allwos client code to interact with a task through the WorkItem interfcae without needing to check whether the object is a leaf. 
          */
-        WorkItemIterator* createIterator()const override;
+        WorkItemIterator* createIterator(IteratorType type = IteratorType::PreOrder)const override;
         void display(int depth) const override;
         bool isBlocked() const override;
         std::string getStateName() const override;
