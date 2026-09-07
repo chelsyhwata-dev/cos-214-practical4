@@ -75,3 +75,7 @@ bool WorkGroup::replaceChild(WorkItem* oldItem, WorkItem* newItem){
 
     return false;
 }
+
+bool WorkGroup::isEscalated() const {
+    return false;
+}

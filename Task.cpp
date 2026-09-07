@@ -71,4 +71,7 @@ void Task::setState(TaskState* newState) {
     state = newState; //set the new state
 }
 
+bool Task::isEscalated() const {
+    return false;
+}
 

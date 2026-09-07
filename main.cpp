@@ -34,7 +34,7 @@ void runEscalationWorkflow(WorkGroup* feature) {
     delete it;
 
     for (WorkItem* item : snapshot) {
-        if (item->isBlocked()) {
+        if (item->isBlocked() && !item->isEscalated()) {
             std::cout << " -> " << item->getName() << " is BLOCKED. Escalating..." << std::endl;
 
             WorkItem* decorated = new SecurityAuditFlagDecorator(item);

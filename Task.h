@@ -19,6 +19,8 @@ class TaskState;
         //taskName is the name or description of the current task and the estimatedHours is the estimated number of hours required to complete the task.
         Task(const std::string& taskName, double estimatedHours);
         ~Task() override;
+        Task(const Task&) = delete;
+        Task& operator=(const Task&) = delete;
         std::string getName() const override;
         double getEstimatedHours() const override;
 
@@ -40,6 +42,7 @@ class TaskState;
 
         //Used BY the state classes to actually change task's state pointer. Client code should not call this directly, it should call the action methods above instead.
         void setState(TaskState* newState);
+        bool isEscalated() const override;
     
     private:
         std::string name;

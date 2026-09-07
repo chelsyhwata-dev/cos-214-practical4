@@ -15,12 +15,17 @@ class WorkItemDecorator : public WorkItem {
     public:
         explicit WorkItemDecorator(WorkItem* item);
         ~WorkItemDecorator() override;
+
+        WorkItemDecorator(const WorkItemDecorator&)=delete;
+        WorkItemDecorator& operator=(const WorkItemDecorator&) = delete;
+
         std::string getName() const override;
         double getEstimatedHours() const override;
         WorkItemIterator* createIterator(IteratorType type = IteratorType::PreOrder) const override;
         void display(int depth) const override;
         bool isBlocked() const override;
         std::string getStateName() const override;
+        virtual bool isEscalated() const;
 
     protected:
         WorkItem* wrapped; //pointer owned by the WorkItemDecorator. The wrapped object is deleted by the decorators destructor.ConcreteDecorator's can use this pointer to access the underlying WorkItem when implementing additional behaviour.

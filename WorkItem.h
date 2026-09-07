@@ -28,6 +28,8 @@ public:
     virtual std::string getStateName()const;
 
     virtual bool replaceChild(WorkItem* oldItem, WorkItem* newItem);
+
+    virtual bool isEscalated() const =0;
 };
 
 #endif

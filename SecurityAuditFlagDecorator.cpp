@@ -11,7 +11,12 @@ double SecurityAuditFlagDecorator::getEstimatedHours() const {
 
 void SecurityAuditFlagDecorator::display(int depth) const {
     std::cout << std::string(depth * 2, ' ')
-              << "  >> flagged for SECURITY AUDIT (+"
+              << " >> [ " << wrapped->getName()
+              << "] flagged for SECURITY AUDIT (+"
               << AUDIT_OVERHEAD_HOURS << "h)" << std::endl;
     wrapped->display(depth);
+}
+
+bool SecurityAuditFlagDecorator::isEscalated() const {
+    return true;
 }

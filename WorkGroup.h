@@ -14,6 +14,9 @@ public:
 
     ~WorkGroup()override;
 
+    WorkGroup(const WorkGroup&) = delete;
+    WorkGroup& operator=(const WorkGroup&) = delete;
+
     void add(WorkItem*item);
     bool remove(WorkItem* item);
 
@@ -26,6 +29,8 @@ public:
 
     size_t childCount() const;
     bool replaceChild(WorkItem* oldItem, WorkItem* newItem) override;
+
+    bool isEscalated() const override;
 
 private:
     std::string name;

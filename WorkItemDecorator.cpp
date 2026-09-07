@@ -15,7 +15,7 @@ double WorkItemDecorator::getEstimatedHours() const {
 }
 
 WorkItemIterator* WorkItemDecorator::createIterator(IteratorType type) const {
-    return wrapped->createIterator();
+    return wrapped->createIterator(type);
 }
 
 void WorkItemDecorator::display(int depth) const {
@@ -28,4 +28,8 @@ bool WorkItemDecorator::isBlocked() const {
 
 std::string WorkItemDecorator::getStateName() const {
     return wrapped->getStateName();
+}
+
+bool WorkItemDecorator::isEscalated() const {
+    return wrapped->isEscalated();
 }

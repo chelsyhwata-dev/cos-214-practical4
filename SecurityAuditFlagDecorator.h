@@ -14,6 +14,7 @@
         explicit SecurityAuditFlagDecorator(WorkItem* item);
         double getEstimatedHours() const override;
         void display(int depth) const override;
+        bool isEscalated() const override;
     
     private:
     static constexpr double AUDIT_OVERHEAD_HOURS = 1.5;
