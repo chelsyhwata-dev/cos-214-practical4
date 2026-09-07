@@ -25,85 +25,70 @@ void showFullBoard(WorkGroup* epic) {
     epic->display(0);
 }
 
-} 
+}
 
-// ------------------------------------------------------------------
-// Exercises every TaskState transition, both the valid ones (which
-// live in the five concrete state classes) and the invalid ones
-// (which fall back to TaskState's default "cannot do that" behaviour).
-// Runs on a standalone Task that is never added to a WorkGroup, so it
-// is deleted explicitly by the caller.
-// ------------------------------------------------------------------
 void runStateMachineCoverage() {
+    // Test the different task states and transitions
     section("Task State Machine - Task A (full walk, valid + invalid)");
 
     Task* a = new Task("Fix login redirect bug", 3.0);
     std::cout << a->getName() << " starts in: " << a->getStateName()
               << " (blocked=" << a->isBlocked() << ")\n";
 
-    // --- Invalid ops while still in Backlog (hits TaskState defaults) ---
     std::cout << "\n[Backlog] trying every op except start() - all should be rejected:\n";
-    a->submitForReview(); // invalid: default
-    a->approve();         // invalid: default
-    a->reject();           // invalid: default
-    a->block();            // invalid: default
-    a->unblock();          // invalid: default
-    a->reopen();           // invalid: default
+    a->submitForReview();
+    a->approve();
+    a->reject();
+    a->block();
+    a->unblock();
+    a->reopen();
     assert(a->getStateName() == "Backlog");
 
-    // --- Backlog -> InProgress (valid) ---
     std::cout << "\n[Backlog] start() - valid transition:\n";
-    a->start(); // BacklogState::start
+    a->start();
     assert(a->getStateName() == "InProgress");
 
     std::cout << "\n[InProgress] trying invalid ops (start again, unblock, reopen, reject):\n";
-    a->start();    // invalid: InProgress doesn't override start
-    a->unblock();  // invalid: default, not blocked
-    a->reopen();   // invalid: default
-    a->reject();   // invalid: default, not in review
+    a->start();
+    a->unblock();
+    a->reopen();
+    a->reject();
 
-    // --- InProgress -> Blocked (valid) ---
     std::cout << "\n[InProgress] block() - valid transition:\n";
-    a->block(); // InProgressState::block
+    a->block();
     assert(a->getStateName() == "Blocked");
-    assert(a->isBlocked() == true); // BlockedState::isBlocked override
+    assert(a->isBlocked() == true);
 
     std::cout << "\n[Blocked] trying invalid ops (block again, start, submitForReview):\n";
-    a->block();            // invalid: default
-    a->start();            // invalid: default
-    a->submitForReview();  // invalid: default
+    a->block();
+    a->start();
+    a->submitForReview();
 
-    // --- Blocked -> InProgress (valid) ---
     std::cout << "\n[Blocked] unblock() - valid transition:\n";
-    a->unblock(); // BlockedState::unblock
+    a->unblock();
     assert(a->getStateName() == "InProgress");
     assert(a->isBlocked() == false);
 
-    // --- InProgress -> InReview (valid) ---
     std::cout << "\n[InProgress] submitForReview() - valid transition:\n";
-    a->submitForReview(); // InProgressState::submitForReview
+    a->submitForReview();
     assert(a->getStateName() == "InReview");
 
     std::cout << "\n[InReview] trying invalid op (block):\n";
-    a->block(); // invalid: default, InReview doesn't override block
+    a->block();
 
-    // --- InReview -> Done (valid) ---
     std::cout << "\n[InReview] approve() - valid transition:\n";
-    a->approve(); // InReviewState::approve
+    a->approve();
     assert(a->getStateName() == "Done");
 
     std::cout << "\n[Done] trying invalid op (start):\n";
-    a->start(); // invalid: default
+    a->start();
 
-    // --- Done -> InProgress (valid, bug found later) ---
     std::cout << "\n[Done] reopen() - valid transition:\n";
-    a->reopen(); // DoneState::reopen
+    a->reopen();
     assert(a->getStateName() == "InProgress");
 
     std::cout << "\nTask A finished the walk in state: " << a->getStateName() << "\n";
 
-    // WorkItem::replaceChild default (Task does not override it) - a leaf
-    // has no children to replace, so this must simply report failure.
     Task* decoyOld = new Task("decoy-old", 0.0);
     Task* decoyNew = new Task("decoy-new", 0.0);
     bool replaced = a->replaceChild(decoyOld, decoyNew);
@@ -112,8 +97,6 @@ void runStateMachineCoverage() {
     delete decoyOld;
     delete decoyNew;
 
-    // Task::createIterator always returns a NullIterator - verify all
-    // three NullIterator operations directly.
     section("Leaf Iteration - NullIterator via Task::createIterator");
     WorkItemIterator* leafIt = a->createIterator();
     std::cout << "NullIterator::hasNext() on a leaf: " << leafIt->hasNext() << "\n";
@@ -122,44 +105,29 @@ void runStateMachineCoverage() {
     std::cout << "NullIterator::next() on a leaf (should be nullptr): "
               << (none == nullptr ? "nullptr" : "NOT NULL") << "\n";
     assert(none == nullptr);
-    leafIt->first(); // no-op, but must not crash
+    leafIt->first();
     std::cout << "NullIterator::first() called (no-op) - still hasNext()==" << leafIt->hasNext() << "\n";
     delete leafIt;
 
-    delete a; // standalone Task, never attached to a WorkGroup
+    delete a;
 
-    // --- Task B: covers InReviewState::reject(), the one valid
-    // transition not exercised by Task A's walk. ---
     section("Task State Machine - Task B (InReview -> reject)");
     Task* b = new Task("Add pagination to reports", 2.0);
-    b->start();            // Backlog -> InProgress
-    b->submitForReview();  // InProgress -> InReview
+    b->start();
+    b->submitForReview();
     std::cout << b->getName() << " is now: " << b->getStateName() << "\n";
-    b->reject(); // InReviewState::reject -> InProgress
+    b->reject();
     std::cout << "After reject(): " << b->getStateName() << "\n";
     assert(b->getStateName() == "InProgress");
     delete b;
 }
 
 int main() {
+    // Build and test the work item hierarchy
     std::cout << "===================================\n";
     std::cout << " TaskForge - Automated Test Driver\n";
     std::cout << "===================================\n";
 
-    // ----------------------------------------------------------------
-    // Build a hierarchy with three levels of nesting below the root,
-    // mixing individual Tasks and nested WorkGroups at the same level
-    // (Composite pattern):
-    //
-    // epic (root)                                    <- root
-    //  |- featureA "Payment Flow"                     <- level 1
-    //  |   |- storyA1 "Gateway Integration"            <- level 2
-    //  |   |   |- task1 "Integrate payment gateway"     <- level 3
-    //  |   |   `- task2 "Add retry logic"                <- level 3
-    //  |   `- task4 "Update payment docs"               <- level 2 (leaf sibling of storyA1)
-    //  `- featureB "Cart UI"                           <- level 1
-    //      `- task3 "Redesign cart page"                 <- level 2
-    // ----------------------------------------------------------------
     section("Building the Composite hierarchy");
 
     WorkGroup* epic = new WorkGroup("Epic: Checkout Revamp");
@@ -190,19 +158,10 @@ int main() {
 
     showFullBoard(epic);
 
-    // ----------------------------------------------------------------
-    // Full state-machine coverage on standalone tasks (kept separate
-    // from the tree so the lifecycle walk can't interact with the
-    // decorator/composite demos below).
-    // ----------------------------------------------------------------
     runStateMachineCoverage();
 
-    // ----------------------------------------------------------------
-    // Iterator coverage: PreOrderIterator (complete traversal) and
-    // BlockedWorkIterator (selection-rule traversal), including two
-    // independent iterators alive over the same structure at once.
-    // ----------------------------------------------------------------
     section("Iterator - PreOrderIterator (complete traversal)");
+    // Test the iterators
     {
         WorkItemIterator* full = epic->createIterator(IteratorType::PreOrder);
         std::cout << "Visiting every item under epic:\n";
@@ -218,8 +177,6 @@ int main() {
         delete full;
     }
 
-    // Block task2 (nested two levels below featureA) so the Blocked
-    // traversal below has something meaningful to find.
     task2->start();
     task2->block();
     std::cout << "\n" << task2->getName() << " is now " << task2->getStateName()
@@ -262,11 +219,8 @@ int main() {
         delete blockedOnly;
     }
 
-    // ----------------------------------------------------------------
-    // Runtime structural change (Composite mutation): move task4 from
-    // featureA to featureB using WorkGroup::remove / WorkGroup::add.
-    // ----------------------------------------------------------------
     section("Runtime structural change - moving a task between groups");
+    // Move a task between groups
     std::cout << "Before move: featureA=" << featureA->childCount()
               << " featureB=" << featureB->childCount() << "\n";
     bool removed = featureA->remove(task4);
@@ -275,18 +229,13 @@ int main() {
     featureB->add(task4);
     std::cout << "After move: featureA=" << featureA->childCount()
               << " featureB=" << featureB->childCount() << "\n";
-    // Removing something that is no longer present must fail cleanly.
+
     bool removedAgain = featureA->remove(task4);
     std::cout << "featureA->remove(task4) again (should be false): " << removedAgain << "\n";
     assert(!removedAgain);
 
-    // ----------------------------------------------------------------
-    // Decorator coverage: three concrete decorators, applied at
-    // runtime, swapped into the tree in place via WorkGroup::replaceChild
-    // (both a direct-child replace and a recursive/nested replace),
-    // and one case of two decorators stacked on the same item.
-    // ----------------------------------------------------------------
     section("Decorator - HighPriorityDecorator on a direct child");
+    // Test the decorators
     std::cout << "Before: \"" << task4->getName() << "\"\n";
     WorkItem* decoratedTask4 = new HighPriorityDecorator(task4);
     std::cout << "After wrapping, name becomes: \"" << decoratedTask4->getName() << "\"\n";
@@ -314,8 +263,7 @@ int main() {
     WorkItem* decoratedTask2 = new SecurityAuditFlagDecorator(task2);
     std::cout << "After wrapping: isEscalated()=" << decoratedTask2->isEscalated()
               << " estimate=" << decoratedTask2->getEstimatedHours() << "h\n";
-    // Calling replaceChild on epic (the root) forces WorkGroup's
-    // recursive search branch, since task2 is not a direct child of epic.
+
     bool swapped2 = epic->replaceChild(task2, decoratedTask2);
     std::cout << "epic->replaceChild(task2, decorated) recursive/nested swap: " << swapped2 << "\n";
     assert(swapped2);
@@ -323,9 +271,9 @@ int main() {
 
     section("Decorator - stacking two decorators on the same item");
     std::cout << "Before: \"" << task1->getName() << "\" estimated " << task1->getEstimatedHours() << "h\n";
-    // CodeReviewRequiredDecorator wraps HighPriorityDecorator wraps task1.
+
     WorkItem* stacked = new CodeReviewRequiredDecorator(new HighPriorityDecorator(task1));
-    bool swapped1 = epic->replaceChild(task1, stacked); // also exercises the recursive branch
+    bool swapped1 = epic->replaceChild(task1, stacked);
     std::cout << "epic->replaceChild(task1, stacked) recursive swap: " << swapped1 << "\n";
     assert(swapped1);
     std::cout << "Stacked name (HighPriority forwards through CodeReview): \"" << stacked->getName() << "\"\n";
@@ -333,9 +281,7 @@ int main() {
     stacked->display(1);
 
     section("Decorator - createIterator() forwarded through a decorated WorkGroup");
-    // Wrap the whole storyA1 group (not just a leaf) to show the
-    // decorator's forwarding createIterator() reaching a *real* iterator
-    // (not a NullIterator), and swap it in via the recursive branch too.
+
     WorkItem* decoratedStory = new HighPriorityDecorator(storyA1);
     bool swappedStory = featureA->replaceChild(storyA1, decoratedStory);
     std::cout << "featureA->replaceChild(storyA1, decorated) group swap: " << swappedStory << "\n";
@@ -353,14 +299,15 @@ int main() {
     bool failedSwap = featureB->replaceChild(orphan, orphanDecorated);
     std::cout << "featureB->replaceChild(orphan, decorated) (should be false): " << failedSwap << "\n";
     assert(!failedSwap);
-    delete orphanDecorated; // never entered the tree, so we own and free it ourselves
+    delete orphanDecorated;
 
     section("Final board after all structural, state and decorator changes");
+    // Show the final board
     showFullBoard(epic);
 
     std::cout << "\nAll functions exercised successfully.\n";
 
-    delete epic; // recursively deletes every WorkGroup/Task/Decorator still owned by the tree
+    delete epic;
     std::cout << "Demo ended. Hierarchy cleaned up.\n";
     return 0;
 }
