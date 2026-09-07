@@ -25,7 +25,7 @@ WorkItemIterator* Task::createIterator() const {
 }
 
 void Task::display(int depth) const {
-    std::cout << std::string(depth * 2, '  ') << "[Task] " << name << "  (" << estimatedHours << "h) - " << getStateName() << std::endl;
+    std::cout << std::string(depth * 2, ' ') << "[Task] " << name << "  (" << estimatedHours << "h) - " << getStateName() << std::endl;
 }
 
 bool Task::isBlocked() const {

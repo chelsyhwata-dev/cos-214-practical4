@@ -18,12 +18,12 @@ class WorkItemDecorator : public WorkItem {
         std::string getName() const override;
         double getEstimatedHours() const override;
         WorkItemIterator* createIterator() const override;
-        void displays(int depth) const override;
+        void display(int depth) const override;
         bool isBlocked() const override;
         std::string getStateName() const override;
 
     protected:
         WorkItem* wrapped; //pointer owned by the WorkItemDecorator. The wrapped object is deleted by the decorators destructor.ConcreteDecorator's can use this pointer to access the underlying WorkItem when implementing additional behaviour.
-}
+};
 
 #endif

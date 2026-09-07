@@ -1,6 +1,7 @@
 #ifndef TASK_H
 #define TASK_H
 
+class TaskState;
 /**
  * @details
  * Task represents a single development ticket, such as "FIX login bug". It is the Leaf Component of the Composite Pattern and can therefore be stored inside a WorkGroup alogside other Tasks or nested WorkGroups.
@@ -44,6 +45,6 @@
         std::string name;
         double estimatedHours;
         TaskState* state; // task owns this pointer and deletes it on destruction or when transitioning to a new state.
- }
+ };
 
  #endif
