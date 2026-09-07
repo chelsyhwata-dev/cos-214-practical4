@@ -13,8 +13,9 @@ double CodeReviewRequiredDecorator::getEstimatedHours() const {
 }
 
 void CodeReviewRequiredDecorator::display(int depth) const {
+    wrapped->display(depth);
     std::cout << std::string(depth * 2, ' ')
               << "  >> requires code review (+"
               << REVIEW_OVERHEAD_HOURS << "h)" << std::endl;
-    wrapped->display(depth);
+    
 }

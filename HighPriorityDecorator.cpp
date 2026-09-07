@@ -14,7 +14,8 @@ void HighPriorityDecorator::display(int depth) const {
     // item (or the next decorator down the stack) print itself
     // as normal. This is how stacked decorators each get to add
     // their own line without needing to know about each other.
+    wrapped->display(depth);
     std::cout << std::string(depth * 2, ' ')
               << "  >> flagged HIGH PRIORITY" << std::endl;
-    wrapped->display(depth);
+    
 }
