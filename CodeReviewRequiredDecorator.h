@@ -1,25 +1,12 @@
-/* ================================================================
- * FILE:          CodeReviewRequiredDecorator.h / .cpp
- * OWNER:         Person 2
- * PATTERN(S):    Decorator (2 of 3 concrete decorators)
- * DOMAIN ROLE:   Marks a ticket as needing a formal code review
- *                before merging - adds the reviewer's time to the
- *                estimate rather than pretending it's free.
- * HOW IT FITS:   Wraps any WorkItem. Overrides getEstimatedHours()
- *                to add +2h on top of whatever the wrapped item
- *                reports, and display() to add a note. This is the
- *                decorator to point to when showing that stacking
- *                changes the numbers a group rolls up
- *                (WorkGroup::getEstimatedHours() sums these).
- * STATUS:        Complete and tested (verified rolled-up hours
- *                come out correct when stacked with other
- *                decorators).
- * STILL NEEDED:  Nothing further from Person 2 - ready to use in
- *                Person 3's demo scenarios.
- * ================================================================ */
-
 #ifndef CODEREVIEWREQUIREDDECORATOR_H
 #define CODEREVIEWREQUIREDDECORATOR_H
+
+/**
+ * @brief Defines the CodeReviewRequiredDecorator concrete decorator. 
+ * 
+ * @details
+ * It marks a WorkItem as requiring a formal code review before thr work can be considered complete. Teh decorator adds a fixed 2-hour review overhead to the estimated completion time and adds a code-review indication when the WorkItem is displayed. The decorator obviously cna be stacked with other WorkItem decorators. Each decorator contributes its own additional behaviour or overhead while preserving the WorkItem interface.
+ */
 
 #include "WorkItemDecorator.h"
 
