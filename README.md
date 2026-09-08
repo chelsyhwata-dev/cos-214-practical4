@@ -4,14 +4,14 @@ TaskForge is a hierarchical work processing system based on a software delivery 
 
 ### Team
 
-* 
-* 
+* Chelsy Whata
+* Yariv Singh
 * Leensa Keterew
 
 ### Student Numbers
 
-* 
-* 
+* u25657764
+* u24612082
 * u24577988
 
 ## Domain
